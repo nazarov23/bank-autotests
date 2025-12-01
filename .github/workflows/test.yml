@@ -11,22 +11,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Получаем код из репозитория
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Устанавливаем JDK 11
       - name: Set up JDK 11
         uses: actions/setup-java@v4
         with:
           java-version: '11'
           distribution: 'temurin'
 
-      # 3. Даем права на запуск gradlew
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # 4. Кешируем зависимости Gradle для ускорения сборки
       - name: Cache Gradle dependencies
         uses: actions/cache@v4
         with:
@@ -37,37 +33,38 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # 5. Собираем проект
+      # Собираем проект
       - name: Build with Gradle
-        run: ./gradlew clean build -x test --stacktrace
+        run: ./gradlew clean build -x test
 
-      # 6. Скачиваем и запускаем приложение для тестов (замените URL на актуальный)
-      - name: Setup test application
+      # ВАЖНО: Нужно добавить app-ibank.jar в репозиторий или скачать его
+      # Если у вас есть ссылка для скачивания:
+      - name: Download test application
         run: |
           mkdir -p artifacts
-          # Если у вас есть прямая ссылка на app-ibank.jar, добавьте её здесь
-          # wget -O artifacts/app-ibank.jar https://example.com/app-ibank.jar
-          echo "Test application setup complete"
+          # ЗАМЕНИТЕ этот URL на актуальную ссылку на app-ibank.jar
+          # wget -O artifacts/app-ibank.jar https://ваш-url/app-ibank.jar
+          echo "Test application placeholder"
 
-      # 7. Запускаем приложение в фоновом режиме
+      # Запускаем приложение в фоне
       - name: Start application for tests
-        if: false  # Поставьте true, когда добавите реальный JAR
+        if: false  # Поставьте true когда добавите реальный JAR
         run: |
           echo "Starting application in test mode..."
           java -jar artifacts/app-ibank.jar -P:profile=test &
-          sleep 10  # Ждем запуска приложения
-          echo "Application started"
+          sleep 15  # Даем приложению время на запуск
+          echo "Application started on port 9999"
 
-      # 8. Запускаем тесты
+      # Запускаем тесты
       - name: Test with Gradle
         run: ./gradlew test --info
 
-      # 9. Сохраняем отчеты тестов как артефакт
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          - name: Start bank application
-            run: |
-              java -jar app-ibank.jar -P:profile=test &
-              sleep 5  # Дать время на запуск
+          name: test-reports
+          path: |
+            build/reports/tests/
+            build/test-results/
+          retention-days: 7
