@@ -1,7 +1,7 @@
 $updatedReadme = @'
 # Тестирование интернет-банка
 
-![Java CI](https://github.com/<ваш-username>/<ваш-репозиторий>/workflows/Java%20CI/badge.svg)
+[![Java CI with Application](https://github.com/nazarov23/bank-autotests/actions/workflows/test.yml/badge.svg)](https://github.com/nazarov23/bank-autotests/actions/workflows/test.yml)
 
 ## Описание проекта
 Автоматизированные тесты для задания "2.3 Patterns" по тестированию интернет-банка с тестовым режимом.
